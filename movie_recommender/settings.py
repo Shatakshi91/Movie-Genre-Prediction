@@ -16,15 +16,32 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def get_bool_env(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.lower() in ('1', 'true', 'yes', 'on')
+
+
+def get_list_env(name, default):
+    value = os.environ.get(name)
+    if not value:
+        return default
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '40_$n*hs61m(shf^y0q6&th7i^b!t1rw6k-458_0)ed34ji73v'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['awesome-movie-recommender.herokuapp.com', '127.0.0.1']
+DEBUG = get_bool_env('DEBUG', True)
+ALLOWED_HOSTS = get_list_env(
+    'ALLOWED_HOSTS',
+    ['awesome-movie-recommender.herokuapp.com', '127.0.0.1', 'localhost']
+)
 
 # Application definition
 
